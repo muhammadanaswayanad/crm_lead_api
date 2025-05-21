@@ -17,12 +17,12 @@ class CRMLeadAPIController(http.Controller):
             'odoo_version': request.env['ir.module.module'].sudo().search([('name', '=', 'base')]).installed_version
         }
     
-    @http.route('/api/create_lead', type='json', auth='public', methods=['POST'], csrf=False)
+    @http.route('/api/create_lead', type='http', auth='public', methods=['POST'], csrf=False)
     def create_lead(self, **post):
         """Create a new lead from API request"""
         try:
             # Get the JSON data
-            data = request.jsonrequest
+            data = json.loads(request.httprequest.data.decode('utf-8'))
             _logger.info("Received lead creation request with data: %s", data)
             
             # Validate required fields
@@ -30,10 +30,11 @@ class CRMLeadAPIController(http.Controller):
             missing_fields = [field for field in required_fields if not data.get(field)]
             
             if missing_fields:
-                return {
+                response = {
                     'status': 'error', 
                     'message': f"Missing fields: {', '.join(missing_fields)}"
                 }
+                return json.dumps(response)
             
             # Extract values
             lead_type = data.get('type', 'lead')
@@ -77,16 +78,18 @@ class CRMLeadAPIController(http.Controller):
             lead = request.env['crm.lead'].sudo().create(lead_values)
             _logger.info("Lead created successfully with ID: %s", lead.id)
             
-            return {
+            response = {
                 'status': 'success',
                 'lead_id': lead.id
             }
+            return json.dumps(response)
             
         except Exception as e:
             tb = traceback.format_exc()
             _logger.error("Error creating lead via API: %s\n%s", str(e), tb)
-            return {
+            response = {
                 'status': 'error',
                 'message': f"Error: {str(e)}",
                 'details': tb if request.env.user.has_group('base.group_system') else None
             }
+            return json.dumps(response)
