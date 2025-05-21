@@ -9,12 +9,18 @@
         - Authentication: Public
         - Required fields: type, contact_name, phone, email, source
         - Optional fields: preferred_course, preferred_branch
+        
+        For testing:
+        - Debug endpoint: /api/debug
+        - Form endpoint: /api/create_lead/form (for form-encoded data)
     """,
     'category': 'CRM',
     'author': 'Your Company',
     'website': 'https://yourcompany.com',
     'depends': ['base', 'crm', 'utm'],
-    'data': [],
+    'data': [
+        'security/ir.model.access.csv',
+    ],
     'installable': True,
     'application': False,
     'auto_install': False,
