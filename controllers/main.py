@@ -68,7 +68,7 @@ class CRMLeadAPIController(http.Controller):
             
             # Add optional fields if provided
             if preferred_course:
-                lead_values['preferred_course'] = preferred_course
+                lead_values['course_preferred'] = preferred_course
             if preferred_branch:
                 lead_values['preferred_branch'] = preferred_branch
             
