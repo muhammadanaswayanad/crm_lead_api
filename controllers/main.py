@@ -55,6 +55,11 @@ class CRMLeadAPIController(http.Controller):
                     'name': source_name
                 })
             
+            # Find the "Unassigned" sales team
+            unassigned_team = request.env['crm.team'].sudo().search(
+                [('name', '=', 'Unassigned')], limit=1
+            )
+            
             # Prepare lead values
             lead_values = {
                 'type': lead_type,
@@ -63,7 +68,8 @@ class CRMLeadAPIController(http.Controller):
                 'phone': phone,
                 'email_from': email,
                 'source_id': source.id,
-                'team_id': False,  # Unassigned Sales Team
+                'team_id': unassigned_team.id if unassigned_team else False,
+                'user_id': False,  # Empty salesperson
             }
             
             # Add optional fields if provided
